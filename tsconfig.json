@@ -114,6 +114,9 @@
       "path": "experimental/packages/opentelemetry-instrumentation-http"
     },
     {
+      "path": "experimental/packages/opentelemetry-instrumentation-react-native-navigation"
+    },
+    {
       "path": "experimental/packages/opentelemetry-instrumentation-xml-http-request"
     },
     {
