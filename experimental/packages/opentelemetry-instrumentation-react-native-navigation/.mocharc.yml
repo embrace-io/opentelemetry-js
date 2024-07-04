@@ -1,0 +1,2 @@
+register: 'tsconfig-paths/register'
+node-option: ["import=tsx"]
