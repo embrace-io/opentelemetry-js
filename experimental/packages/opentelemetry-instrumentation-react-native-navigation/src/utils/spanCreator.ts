@@ -1,20 +1,20 @@
-import {AppStateStatus} from "react-native";
-import {MutableRefObject} from "react";
+import { AppStateStatus } from 'react-native';
+import { MutableRefObject } from 'react';
 
-import {TracerRef} from "./hooks/useTrace";
-import {SpanRef} from "./hooks/useSpan";
+import { TracerRef } from './hooks/useTrace';
+import { SpanRef } from './hooks/useSpan';
 
 const ATTRIBUTES = {
-  initialView: "launch",
-  finalView: "unmount",
-  appState: "status.end",
+  initialView: 'launch',
+  finalView: 'unmount',
+  appState: 'status.end',
 };
 
 const spanStart = (
   tracer: TracerRef,
   span: SpanRef,
   currentRouteName: string,
-  isLaunch?: boolean,
+  isLaunch?: boolean
 ) => {
   if (!tracer.current || span.current !== null) {
     // do nothing in case for some reason the tracer is not initialized or there is already an active span
@@ -30,7 +30,7 @@ const spanStart = (
 
 const spanEnd = (span: SpanRef, appState?: AppStateStatus) => {
   if (span.current) {
-    span.current.setAttribute(ATTRIBUTES.appState, appState ?? "active");
+    span.current.setAttribute(ATTRIBUTES.appState, appState ?? 'active');
 
     span.current.end();
 
@@ -46,7 +46,7 @@ const spanCreatorAppState =
       return;
     }
 
-    if (currentState === "active") {
+    if (currentState === 'active') {
       spanStart(tracer, span, currentRouteName);
     } else {
       spanEnd(span, currentState);
@@ -57,7 +57,7 @@ const spanCreator = (
   tracer: TracerRef,
   span: SpanRef,
   view: MutableRefObject<string | null>,
-  currentRouteName: string,
+  currentRouteName: string
 ) => {
   if (!tracer.current) {
     // do nothing in case for some reason the tracer is not initialized
@@ -81,4 +81,4 @@ const spanCreator = (
 };
 
 export default spanCreator;
-export {spanStart, spanEnd, spanCreatorAppState, ATTRIBUTES};
+export { spanStart, spanEnd, spanCreatorAppState, ATTRIBUTES };

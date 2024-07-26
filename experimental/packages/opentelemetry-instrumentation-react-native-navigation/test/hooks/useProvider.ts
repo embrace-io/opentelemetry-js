@@ -1,9 +1,9 @@
-import {useCallback, useEffect, useRef} from "react";
+import { useCallback, useEffect, useRef } from 'react';
 import {
   BasicTracerProvider,
   ConsoleSpanExporter,
   SimpleSpanProcessor,
-} from "@opentelemetry/sdk-trace-base";
+} from '@opentelemetry/sdk-trace-base';
 
 /**
  * These are only for web, able to see logs coming through DevTools while developing.
@@ -34,7 +34,7 @@ import {
         "links": []
     }
  */
-const useProvider = () => {
+const useProvider = (shouldShutDown = false) => {
   const provider = useRef(new BasicTracerProvider());
 
   const configure = useCallback(() => {
@@ -43,28 +43,32 @@ const useProvider = () => {
 
     provider.current.addSpanProcessor(processor);
     provider.current.register();
+    console.log('3 useeffect mount and configure');
   }, []);
 
   useEffect(() => {
     const providerRef = provider.current;
+    console.log('3 main useeffect');
 
     try {
       configure();
     } catch (e) {
-      console.warn("Provider was not initialized", e);
+      console.warn('Provider was not initialized', e);
     }
 
     return () => {
       const shutdown = async () => {
-        // this is important if we are creating more than one instance of a Provider
-        await providerRef.shutdown();
+        if (shouldShutDown) {
+          // this is important if we are creating more than one instance of a Provider
+          await providerRef.shutdown();
+        }
       };
 
       shutdown();
     };
-  }, [configure]);
+  }, [configure, shouldShutDown]);
 
-  return provider.current;
+  return provider;
 };
 
 export default useProvider;

@@ -20,6 +20,9 @@
     "test/**/*.ts",
     "test/**/*.tsx"
   ],
+  "exclude": [
+    "node_modules",
+  ],
   "references": [
     {
       "path": "../../../api"
