@@ -39,6 +39,9 @@
       "path": "experimental/packages/opentelemetry-instrumentation-fetch/tsconfig.esnext.json"
     },
     {
+      "path": "experimental/packages/opentelemetry-instrumentation-react-native-navigation/tsconfig.esnext.json"
+    },
+    {
       "path": "experimental/packages/opentelemetry-instrumentation-xml-http-request/tsconfig.esnext.json"
     },
     {
