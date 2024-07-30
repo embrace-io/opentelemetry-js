@@ -25,7 +25,7 @@ const AppWithProvider = ({ shouldPassProvider = true }) => {
       ref={ref as unknown as ForwardedRef<NavRef>}
       provider={shouldPassProvider ? provider.current : undefined}
     >
-      my app goes here
+      My app goes here
     </NavigationTracker>
   );
 };
