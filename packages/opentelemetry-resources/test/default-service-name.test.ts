@@ -15,32 +15,56 @@
  */
 
 import * as assert from 'assert';
-import { defaultServiceName } from '../src/default-service-name';
+import {
+  _clearDefaultServiceNameCache,
+  defaultServiceName,
+} from '../src/default-service-name';
 
-const isNode = typeof process === 'object' && typeof process.argv0 === 'string';
+// node tests must be skipped in browser and webworker envs
+const isNode = typeof global.process === 'object';
 
 describe('defaultServiceName', () => {
+  const originalProcess = global.process;
+
+  beforeEach(() => _clearDefaultServiceNameCache());
+  afterEach(() => {
+    global.process = originalProcess;
+  });
+
   it('returns unknown_service prefix', () => {
     const serviceName = defaultServiceName();
     assert.ok(serviceName.startsWith('unknown_service'));
   });
-
-  if (isNode) {
-    it('includes process.argv0 in Node.js', () => {
-      const serviceName = defaultServiceName();
-      assert.ok(serviceName.startsWith('unknown_service:'));
-      assert.ok(serviceName.length > 'unknown_service:'.length);
-    });
-  } else {
-    it('returns plain unknown_service in browser', () => {
-      const serviceName = defaultServiceName();
-      assert.strictEqual(serviceName, 'unknown_service');
-    });
-  }
 
   it('returns consistent value on multiple calls', () => {
     const serviceName1 = defaultServiceName();
     const serviceName2 = defaultServiceName();
     assert.strictEqual(serviceName1, serviceName2);
   });
+
+  (isNode ? it : it.skip)('includes process.argv0 in Node.js', () => {
+    const serviceName = defaultServiceName();
+    assert.ok(serviceName.startsWith('unknown_service:'));
+    assert.ok(serviceName.length > 'unknown_service:'.length);
+  });
+
+  (isNode ? it : it.skip)(
+    'returns plain unknown_service when process is not an object',
+    () => {
+      // @ts-expect-error redefining process for testing
+      global.process = undefined;
+      const serviceName = defaultServiceName();
+      assert.strictEqual(serviceName, 'unknown_service');
+    }
+  );
+
+  (isNode ? it : it.skip)(
+    'returns plain unknown_service when argv0 is empty',
+    () => {
+      // @ts-expect-error redefining process for testing
+      global.process = { argv0: '' };
+      const serviceName = defaultServiceName();
+      assert.strictEqual(serviceName, 'unknown_service');
+    }
+  );
 });

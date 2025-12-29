@@ -34,3 +34,8 @@ export function defaultServiceName(): string {
   }
   return serviceName;
 }
+
+/** @internal For testing purposes only */
+export function _clearDefaultServiceNameCache(): void {
+  serviceName = undefined;
+}
