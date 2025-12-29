@@ -14,15 +14,23 @@
  * limitations under the License.
  */
 
-// Check if we are in a Node.js environment and if so, use the process.argv0 property
-// to determine the default service name
-const DEFAULT_SERVICE_NAME =
-  typeof process === 'object' &&
-  typeof process.argv0 === 'string' &&
-  process.argv0.length > 0
-    ? `unknown_service:${process.argv0}`
-    : 'unknown_service';
+let serviceName: string | undefined;
 
+// Property name accessed dynamically to avoid browser/Edge Runtime static analysis warnings
+const ARGV0 = 'argv0';
+
+/**
+ * Returns the default service name for OpenTelemetry resources.
+ * In Node.js environments, returns "unknown_service:<process.argv0>".
+ * In browser/edge environments, returns "unknown_service".
+ */
 export function defaultServiceName(): string {
-  return DEFAULT_SERVICE_NAME;
+  if (serviceName === undefined) {
+    const argv0 = typeof process === 'object' ? process[ARGV0] : undefined;
+    serviceName =
+      typeof argv0 === 'string' && argv0.length > 0
+        ? `unknown_service:${argv0}`
+        : 'unknown_service';
+  }
+  return serviceName;
 }
