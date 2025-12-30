@@ -24,9 +24,10 @@ import {
 } from '@opentelemetry/semantic-conventions';
 import * as assert from 'assert';
 import * as sinon from 'sinon';
-import { describeBrowser, describeNode } from './util';
-import { defaultResource, emptyResource, resourceFromAttributes } from '../src';
 import * as EventEmitter from 'events';
+import { defaultResource, emptyResource, resourceFromAttributes } from '../src';
+import { _clearDefaultServiceNameCache } from '../src/default-service-name';
+import { describeBrowser, describeNode } from './util';
 
 describe('Resource', () => {
   const resource1 = resourceFromAttributes({
@@ -474,6 +475,8 @@ describe('Resource', () => {
   });
 
   describeNode('.default()', () => {
+    beforeEach(() => _clearDefaultServiceNameCache());
+
     it('should return a default resource', () => {
       const resource = defaultResource();
       assert.strictEqual(
@@ -496,6 +499,8 @@ describe('Resource', () => {
   });
 
   describeBrowser('.default()', () => {
+    beforeEach(() => _clearDefaultServiceNameCache());
+
     it('should return a default resource', () => {
       const resource = defaultResource();
       assert.strictEqual(
