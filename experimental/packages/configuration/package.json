@@ -10,13 +10,21 @@
   },
   "main": "./build/index.cjs",
   "module": "./build/index.mjs",
-  "types": "./build/index.d.ts",
+  "types": "./build/index.d.cts",
   "exports": {
     ".": {
-      "types": "./build/index.d.ts",
-      "esnext": "./build/index.mjs",
-      "import": "./build/index.mjs",
-      "default": "./build/index.cjs"
+      "esnext": {
+        "types": "./build/index.d.mts",
+        "default": "./build/index.mjs"
+      },
+      "require": {
+        "types": "./build/index.d.cts",
+        "default": "./build/index.cjs"
+      },
+      "import": {
+        "types": "./build/index.d.mts",
+        "default": "./build/index.mjs"
+      }
     }
   },
   "repository": "open-telemetry/opentelemetry-js",
@@ -43,7 +51,8 @@
   "files": [
     "build/**/*.cjs",
     "build/**/*.mjs",
-    "build/**/*.d.ts",
+    "build/**/*.d.cts",
+    "build/**/*.d.mts",
     "build/**/*.map",
     "LICENSE",
     "README.md"

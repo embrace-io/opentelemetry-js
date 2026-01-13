@@ -16,22 +16,37 @@
     "./build/platform/node/performance.mjs": "./build/platform/browser/performance.mjs",
     "./build/platform/node/sdk-info.mjs": "./build/platform/browser/sdk-info.mjs"
   },
-  "types": "./build/index.d.ts",
+  "types": "./build/index.d.cts",
   "exports": {
     ".": {
-      "types": "./build/index.d.ts",
-      "require": "./build/index.cjs",
-      "import": "./build/index.mjs"
+      "require": {
+        "types": "./build/index.d.cts",
+        "default": "./build/index.cjs"
+      },
+      "import": {
+        "types": "./build/index.d.mts",
+        "default": "./build/index.mjs"
+      }
     },
     "./platform": {
-      "types": "./build/platform/index.d.ts",
-      "require": "./build/platform/index.cjs",
-      "import": "./build/platform/index.mjs"
+      "require": {
+        "types": "./build/platform/index.d.cts",
+        "default": "./build/platform/index.cjs"
+      },
+      "import": {
+        "types": "./build/platform/index.d.mts",
+        "default": "./build/platform/index.mjs"
+      }
     },
     "./platform/browser": {
-      "types": "./build/platform/browser/index.d.ts",
-      "require": "./build/platform/browser/index.cjs",
-      "import": "./build/platform/browser/index.mjs"
+      "require": {
+        "types": "./build/platform/browser/index.d.cts",
+        "default": "./build/platform/browser/index.cjs"
+      },
+      "import": {
+        "types": "./build/platform/browser/index.d.mts",
+        "default": "./build/platform/browser/index.mjs"
+      }
     },
     "./package.json": "./package.json"
   },
@@ -69,7 +84,8 @@
   "files": [
     "build/**/*.cjs",
     "build/**/*.mjs",
-    "build/**/*.d.ts",
+    "build/**/*.d.cts",
+    "build/**/*.d.mts",
     "build/**/*.map",
     "LICENSE",
     "README.md"
