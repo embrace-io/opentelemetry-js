@@ -14,23 +14,7 @@
  * limitations under the License.
  */
 
-export interface ExportResponseSuccess {
-  status: 'success';
-  data?: Uint8Array;
-}
-
-export interface ExportResponseFailure {
-  status: 'failure';
-  error: Error;
-}
-
-export interface ExportResponseRetryable {
-  status: 'retryable';
-  retryInMillis?: number;
-  error?: Error;
-}
-
-export type ExportResponse =
-  | ExportResponseSuccess
-  | ExportResponseFailure
-  | ExportResponseRetryable;
+export { httpAgentFactoryFromOptions } from './configuration/otlp-node-http-configuration';
+export { createOtlpHttpExportDelegate } from './otlp-http-export-delegate';
+export { getSharedConfigurationFromEnvironment } from './configuration/shared-env-configuration';
+export { convertLegacyHttpOptions } from './configuration/convert-legacy-node-http-options';

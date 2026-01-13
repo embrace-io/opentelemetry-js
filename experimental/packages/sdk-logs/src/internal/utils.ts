@@ -14,23 +14,15 @@
  * limitations under the License.
  */
 
-export interface ExportResponseSuccess {
-  status: 'success';
-  data?: Uint8Array;
-}
+import type { InstrumentationScope } from '@opentelemetry/core';
 
-export interface ExportResponseFailure {
-  status: 'failure';
-  error: Error;
+/**
+ * Converting the instrumentation scope object to a unique identifier string.
+ * @param scope - The instrumentation scope to convert
+ * @returns A unique string identifier for the scope
+ */
+export function getInstrumentationScopeKey(
+  scope: InstrumentationScope
+): string {
+  return `${scope.name}@${scope.version || ''}:${scope.schemaUrl || ''}`;
 }
-
-export interface ExportResponseRetryable {
-  status: 'retryable';
-  retryInMillis?: number;
-  error?: Error;
-}
-
-export type ExportResponse =
-  | ExportResponseSuccess
-  | ExportResponseFailure
-  | ExportResponseRetryable;

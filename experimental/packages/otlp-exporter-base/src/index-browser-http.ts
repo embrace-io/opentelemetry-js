@@ -14,23 +14,10 @@
  * limitations under the License.
  */
 
-export interface ExportResponseSuccess {
-  status: 'success';
-  data?: Uint8Array;
-}
+export {
+  createOtlpXhrExportDelegate,
+  createOtlpSendBeaconExportDelegate,
+} from './otlp-browser-http-export-delegate';
 
-export interface ExportResponseFailure {
-  status: 'failure';
-  error: Error;
-}
-
-export interface ExportResponseRetryable {
-  status: 'retryable';
-  retryInMillis?: number;
-  error?: Error;
-}
-
-export type ExportResponse =
-  | ExportResponseSuccess
-  | ExportResponseFailure
-  | ExportResponseRetryable;
+export { convertLegacyBrowserHttpOptions } from './configuration/convert-legacy-browser-http-options';
+export { createLegacyOtlpBrowserExportDelegate } from './configuration/create-legacy-browser-delegate';

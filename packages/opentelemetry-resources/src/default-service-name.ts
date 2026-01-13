@@ -14,23 +14,15 @@
  * limitations under the License.
  */
 
-export interface ExportResponseSuccess {
-  status: 'success';
-  data?: Uint8Array;
-}
+// Check if we are in a Node.js environment and if so, use the process.argv0 property
+// to determine the default service name
+const DEFAULT_SERVICE_NAME =
+  typeof process === 'object' &&
+  typeof process.argv0 === 'string' &&
+  process.argv0.length > 0
+    ? `unknown_service:${process.argv0}`
+    : 'unknown_service';
 
-export interface ExportResponseFailure {
-  status: 'failure';
-  error: Error;
+export function defaultServiceName(): string {
+  return DEFAULT_SERVICE_NAME;
 }
-
-export interface ExportResponseRetryable {
-  status: 'retryable';
-  retryInMillis?: number;
-  error?: Error;
-}
-
-export type ExportResponse =
-  | ExportResponseSuccess
-  | ExportResponseFailure
-  | ExportResponseRetryable;
