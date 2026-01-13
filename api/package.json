@@ -28,7 +28,7 @@
   "repository": "open-telemetry/opentelemetry-js",
   "scripts": {
     "clean": "rm -rf build",
-    "compile": "tsdown && tsc -p tsconfig.dts.json",
+    "compile": "tsdown",
     "lint:fix": "eslint . --ext .ts --fix",
     "lint": "eslint . --ext .ts",
     "test:browser": "karma start --single-run",

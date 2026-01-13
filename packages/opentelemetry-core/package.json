@@ -38,7 +38,7 @@
   "repository": "open-telemetry/opentelemetry-js",
   "scripts": {
     "prepublishOnly": "npm run compile",
-    "compile": "tsdown && tsc -p tsconfig.dts.json",
+    "compile": "tsdown",
     "clean": "rm -rf build",
     "test": "nyc mocha 'test/**/*.test.ts' --exclude 'test/browser/**/*.ts'",
     "test:browser": "karma start --single-run",

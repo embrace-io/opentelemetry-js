@@ -31,7 +31,7 @@
   },
   "scripts": {
     "clean": "rm -rf build",
-    "compile": "tsdown && tsc -p tsconfig.dts.json",
+    "compile": "tsdown",
     "lint": "eslint . --ext .ts",
     "lint:fix": "eslint . --ext .ts --fix",
     "peer-api-check": "node ../../../scripts/peer-api-check.js",

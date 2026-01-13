@@ -27,7 +27,7 @@
   "repository": "open-telemetry/opentelemetry-js",
   "scripts": {
     "prepublishOnly": "npm run compile",
-    "compile": "tsdown && tsc -p tsconfig.dts.json",
+    "compile": "tsdown",
     "clean": "rm -rf build",
     "version": "node ../scripts/version-update.js",
     "watch": "tsdown --watch",

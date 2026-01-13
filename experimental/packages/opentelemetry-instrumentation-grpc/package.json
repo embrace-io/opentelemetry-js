@@ -23,7 +23,7 @@
   "scripts": {
     "prepublishOnly": "npm run compile",
     "precompile": "npm run protos:generate",
-    "compile": "tsdown && tsc -p tsconfig.dts.json",
+    "compile": "tsdown",
     "clean": "rm -rf build",
     "test": "npm run protos:generate && nyc mocha test/**/*.test.ts",
     "tdd": "npm run test -- --watch-extensions ts --watch",

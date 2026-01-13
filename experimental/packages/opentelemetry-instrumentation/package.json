@@ -36,7 +36,7 @@
   ],
   "scripts": {
     "prepublishOnly": "npm run compile",
-    "compile": "tsdown && tsc -p tsconfig.dts.json",
+    "compile": "tsdown",
     "clean": "rm -rf build",
     "lint": "eslint . --ext .ts",
     "lint:fix": "eslint . --ext .ts --fix",
