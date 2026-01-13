@@ -28,13 +28,15 @@
         "types": "./build/index.d.mts",
         "default": "./build/index.mjs"
       }
-    }
+    },
+    "./hook.mjs": "./hook.mjs"
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/open-telemetry/opentelemetry-js.git"
   },
   "files": [
+    "hook.mjs",
     "build/**/*.cjs",
     "build/**/*.mjs",
     "build/**/*.d.cts",
