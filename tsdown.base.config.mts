@@ -8,5 +8,6 @@ export default defineConfig({
   dts: true,
   sourcemap: true,
   unbundle: true,
-  target: 'es2022'
+  target: 'es2022',
+  publint: true
 });
