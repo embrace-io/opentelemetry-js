@@ -19,14 +19,17 @@
   "types": "./build/index.d.ts",
   "exports": {
     ".": {
+      "types": "./build/index.d.ts",
       "require": "./build/index.cjs",
       "import": "./build/index.mjs"
     },
     "./platform": {
+      "types": "./build/platform/index.d.ts",
       "require": "./build/platform/index.cjs",
       "import": "./build/platform/index.mjs"
     },
     "./platform/browser": {
+      "types": "./build/platform/browser/index.d.ts",
       "require": "./build/platform/browser/index.cjs",
       "import": "./build/platform/browser/index.mjs"
     },

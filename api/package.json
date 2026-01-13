@@ -14,10 +14,12 @@
   "types": "./build/index.d.ts",
   "exports": {
     ".": {
+      "types": "./build/index.d.ts",
       "require": "./build/index.cjs",
       "import": "./build/index.mjs"
     },
     "./experimental": {
+      "types": "./build/experimental/index.d.ts",
       "require": "./build/experimental/index.cjs",
       "import": "./build/experimental/index.mjs"
     },
