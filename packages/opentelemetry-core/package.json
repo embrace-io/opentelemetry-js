@@ -12,8 +12,6 @@
   "module": "./build/index.mjs",
   "browser": {
     "./build/platform/node/environment.mjs": "./build/platform/browser/environment.mjs",
-    "./build/platform/node/globalThis.mjs": "./build/platform/browser/globalThis.mjs",
-    "./build/platform/node/performance.mjs": "./build/platform/browser/performance.mjs",
     "./build/platform/node/sdk-info.mjs": "./build/platform/browser/sdk-info.mjs"
   },
   "types": "./build/index.d.cts",
