@@ -109,7 +109,7 @@
     "publint": "0.3.16",
     "semver": "7.7.3",
     "ts-node": "10.9.2",
-    "tsdown": "0.17.2",
+    "tsdown": "0.20.0-beta.1",
     "typedoc": "0.27.9",
     "typedoc-plugin-missing-exports": "3.1.0",
     "typescript": "5.0.4",
