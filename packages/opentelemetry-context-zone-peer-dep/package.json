@@ -1,6 +1,6 @@
 {
   "name": "@opentelemetry/context-zone-peer-dep",
-  "version": "2.2.0",
+  "version": "2.3.0",
   "description": "OpenTelemetry Context Zone with peer dependency for zone.js",
   "author": "OpenTelemetry Authors",
   "homepage": "https://github.com/open-telemetry/opentelemetry-js/tree/main/packages/opentelemetry-context-zone-peer-dep",

@@ -1,6 +1,6 @@
 {
   "name": "@opentelemetry/context-async-hooks",
-  "version": "2.2.0",
+  "version": "2.3.0",
   "description": "OpenTelemetry AsyncHooks-based Context Manager",
   "author": "OpenTelemetry Authors",
   "homepage": "https://github.com/open-telemetry/opentelemetry-js/tree/main/packages/opentelemetry-context-async-hooks",

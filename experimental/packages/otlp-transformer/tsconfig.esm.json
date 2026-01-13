@@ -1,16 +1,15 @@
 {
-  "extends": "../../../tsconfig.base.json",
+  "extends": "../../../tsconfig.base.esm.json",
   "compilerOptions": {
     "allowJs": true,
-    "outDir": "build",
-    "rootDir": "."
+    "outDir": "build/esm",
+    "rootDir": "src",
+    "tsBuildInfoFile": "build/esm/tsconfig.esm.tsbuildinfo"
   },
-  "files": [],
   "include": [
     "src/**/*.ts",
     "src/generated/*.js",
-    "src/generated/*.ts",
-    "test/**/*.ts"
+    "src/generated/*.ts"
   ],
   "references": [
     {
