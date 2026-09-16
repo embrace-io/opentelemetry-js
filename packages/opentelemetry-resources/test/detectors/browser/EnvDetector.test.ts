@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { envDetector } from '../../../src';
+import { envDetector } from '../../../src/detectors';
 import { describeBrowser } from '../../util';
 import { assertEmptyResource } from '../../util/resource-assertions';
 

@@ -3,17 +3,11 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
+// Browser entry point. Mirrors index.ts minus hostDetector, osDetector,
+// processDetector and serviceInstanceIdDetector, which are node-only.
 export type { ResourceDetectionConfig } from './config';
 export { detectResources } from './detect-resources';
 export { envDetector } from './detectors';
-// Node entry point, so these resolve directly rather than through a condition.
-// index-browser.ts omits them: they are node-only.
-export {
-  hostDetector,
-  osDetector,
-  processDetector,
-  serviceInstanceIdDetector,
-} from './detectors/platform/node';
 export type { Resource } from './Resource';
 export {
   resourceFromAttributes,

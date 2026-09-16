@@ -14,6 +14,12 @@ For notes on migrating to 3.x see [the 3.x migration guide](doc/3.x/migration-gu
 ### :boom: Breaking Changes
 
 * chore(context-async-hooks)!: remove the unused class `AsyncHooksContextManager` [#7078](https://github.com/open-telemetry/opentelemetry-js/pull/7078)
+* feat!: replace the top-level `browser` field in `package.json` with `#platform` subpath imports
+  * The legacy top-level `browser` field has been removed from every package that declared one. Bundlers now select platform code through the standard `imports` map (`#platform`) and its `browser` condition, so importing a package by name resolves to the browser implementation exactly as before.
+  * Bundlers that do not support the `imports` field, or that are configured not to apply the `browser` condition, will now resolve Node.js implementations and pull in `os`, `path` and other built-ins. Enable the `browser` condition in your bundler's resolver.
+* feat(resources)!: node-only detectors are no longer exported from browser builds
+  * `hostDetector`, `osDetector`, `processDetector` and `serviceInstanceIdDetector` previously resolved to no-op stand-ins in browser builds, silently producing an empty resource. They are now simply absent, so importing one fails at build time instead of doing nothing at runtime. Node.js builds are unaffected.
+  * The `./detectors/platform` and `./detectors/platform/browser` subpaths have been removed. `@opentelemetry/resources` no longer ships a separate browser detector implementation, so there is no platform split left to expose. Import the detectors from the package root instead.
 * feat!: migrate package builds from `tsc` to `tsdown`, emitting dual CJS/ESM output from a single `dist/` directory and declaring an `exports` map on every package [#6293](https://github.com/open-telemetry/opentelemetry-js/pull/6293) @overbalance
   * Importing a package by its name is unaffected in both CommonJS and ESM, as is every subpath listed in its `exports` map.
   * **Deep imports into the build output no longer resolve.** An `exports` map is an allowlist that Node.js and bundlers enforce, so specifiers such as `@opentelemetry/core/build/src/...` or `@opentelemetry/core/build/esm/...` now fail with `ERR_PACKAGE_PATH_NOT_EXPORTED`. Rewriting them to the new file layout does not help — unlisted subpaths are rejected whether or not the file exists.

@@ -1,0 +1,30 @@
+{
+  "extends": "./tsconfig.base.json",
+  "compilerOptions": {
+    // Resolves #platform to each package's browser barrel. The normal build
+    // only ever sees the node side, so the browser API surface is otherwise
+    // never checked. Requires a prior build, since #platform points at dist.
+    "customConditions": ["browser"],
+    "noEmit": true,
+    "composite": false,
+    "declaration": false,
+    "declarationMap": false,
+    "emitDeclarationOnly": false,
+    "incremental": false,
+    "lib": ["es2022", "dom", "dom.iterable"]
+  },
+  "include": [
+    "packages/opentelemetry-core/src/**/*.ts",
+    "packages/sdk-trace/src/**/*.ts",
+    "packages/opentelemetry-exporter-zipkin/src/**/*.ts",
+    "packages/opentelemetry-resources/src/**/*.ts",
+    "experimental/packages/sdk-logs/src/**/*.ts",
+    "experimental/packages/opentelemetry-instrumentation/src/**/*.ts",
+    "experimental/packages/exporter-trace-otlp-http/src/**/*.ts",
+    "experimental/packages/exporter-trace-otlp-proto/src/**/*.ts",
+    "experimental/packages/exporter-logs-otlp-http/src/**/*.ts",
+    "experimental/packages/exporter-logs-otlp-proto/src/**/*.ts",
+    "experimental/packages/opentelemetry-exporter-metrics-otlp-http/src/**/*.ts",
+    "experimental/packages/opentelemetry-exporter-metrics-otlp-proto/src/**/*.ts"
+  ]
+}

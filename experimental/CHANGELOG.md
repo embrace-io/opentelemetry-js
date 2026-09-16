@@ -9,6 +9,9 @@ For notes on migrating to 3.x see [the 3.x migration guide](../doc/3.x/migration
 
 ### :boom: Breaking Changes
 
+* feat!: replace the top-level `browser` field in `package.json` with `#platform` subpath imports
+  * Affects `@opentelemetry/instrumentation`, `@opentelemetry/sdk-logs` and the OTLP trace, logs and metrics exporters (`http` and `proto`). The legacy top-level `browser` field has been removed; bundlers now select platform code through the standard `imports` map (`#platform`) and its `browser` condition.
+  * Importing these packages by name is unaffected. Bundlers that do not apply the `browser` condition will resolve Node.js implementations and pull in built-ins such as `os` and `path`.
 * feat(instrumentation-http)!: remove deprecated `serverName` field from `HttpInstrumentationConfig` [#7081](https://github.com/open-telemetry/opentelemetry-js/pull/7081)
   * The `serverName` option had no effect; stable HTTP semantic conventions do not include `http.server_name`. Remove it from any `setConfig()` or constructor call.
 * feat(sdk-node)!: remove deprecated `NodeSDKConfiguration` fields `logRecordProcessor`, `metricReader`, `spanProcessor` and deprecated namespace re-exports `node`, `tracing`

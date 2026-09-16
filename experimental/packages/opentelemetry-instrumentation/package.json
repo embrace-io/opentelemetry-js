@@ -18,13 +18,23 @@
     },
     "./hook.mjs": "./hook.mjs",
     "./platform": {
+      "browser": {
+        "import": {
+          "types": "./dist/platform/browser/index.d.mts",
+          "default": "./dist/platform/browser/index.mjs"
+        },
+        "require": {
+          "types": "./dist/platform/browser/index.d.cts",
+          "default": "./dist/platform/browser/index.cjs"
+        }
+      },
       "import": {
-        "types": "./dist/platform/index.d.mts",
-        "default": "./dist/platform/index.mjs"
+        "types": "./dist/platform/node/index.d.mts",
+        "default": "./dist/platform/node/index.mjs"
       },
       "require": {
-        "types": "./dist/platform/index.d.cts",
-        "default": "./dist/platform/index.cjs"
+        "types": "./dist/platform/node/index.d.cts",
+        "default": "./dist/platform/node/index.cjs"
       }
     },
     "./platform/browser": {
@@ -38,12 +48,15 @@
       }
     }
   },
-  "browser": {
-    "./dist/platform/node/instrumentation.mjs": "./dist/platform/browser/instrumentation.mjs",
-    "./dist/platform/node/instrumentation.cjs": "./dist/platform/browser/instrumentation.cjs",
-    "./dist/platform/node/normalize.mjs": "./dist/platform/browser/noop-normalize.mjs",
-    "./dist/platform/index.mjs": "./dist/platform/browser/index.mjs",
-    "./dist/platform/index.cjs": "./dist/platform/browser/index.cjs"
+  "imports": {
+    "#platform": {
+      "browser": {
+        "import": "./dist/platform/browser/index.mjs",
+        "require": "./dist/platform/browser/index.cjs"
+      },
+      "import": "./dist/platform/node/index.mjs",
+      "require": "./dist/platform/node/index.cjs"
+    }
   },
   "author": "OpenTelemetry Authors",
   "homepage": "https://github.com/open-telemetry/opentelemetry-js/tree/main/experimental/packages/opentelemetry-instrumentation",
