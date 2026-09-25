@@ -7,6 +7,28 @@ import { diag } from '@opentelemetry/api';
 import type { Resource } from './Resource';
 import { emptyResource, resourceFromDetectedResource } from './ResourceImpl';
 import type { ResourceDetectionConfig } from './config';
+import type { ResourceDetector } from './types';
+
+// A browser build hands CommonJS callers `undefined` for the node-only
+// detectors it omits, so config.detectors can hold non-detectors at runtime.
+function isResourceDetector(
+  detector: unknown,
+  index: number
+): detector is ResourceDetector {
+  if (
+    typeof detector === 'object' &&
+    detector !== null &&
+    'detect' in detector &&
+    typeof detector.detect === 'function'
+  ) {
+    return true;
+  }
+  diag.warn(
+    `detectResources: skipping detectors[${index}] (${String(detector)}), which is not a resource detector. ` +
+      'hostDetector, osDetector, processDetector and serviceInstanceIdDetector are undefined in browser builds; register them from Node.js-only code.'
+  );
+  return false;
+}
 
 /**
  * Runs all resource detectors and returns the results merged into a single Resource.
@@ -16,7 +38,8 @@ import type { ResourceDetectionConfig } from './config';
 export const detectResources = (
   config: ResourceDetectionConfig = {}
 ): Resource => {
-  const resources: Resource[] = (config.detectors || []).map(d => {
+  const resources: Resource[] = (config.detectors || []).map((d, i) => {
+    if (!isResourceDetector(d, i)) return emptyResource();
     try {
       const resource = resourceFromDetectedResource(d.detect(config));
       diag.debug(`${d.constructor.name} found resource.`, resource);
