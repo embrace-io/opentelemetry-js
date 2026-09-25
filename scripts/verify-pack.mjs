@@ -6,9 +6,11 @@
 
 // Packs every publishable workspace package, then loads the require/import
 // targets of every `exports` entry (or main/module) from the extracted tarball
-// and existence-checks types/browser/main/module files. Catches broken
-// `exports` maps, missing files in `files`, and CJS/ESM interop bugs that
-// unit tests (which run against TS source) can't see.
+// and existence-checks types/browser/main/module/imports files. Then resolves
+// every browser-conditional specifier under each platform condition. Catches
+// broken `exports`/`imports` maps, condition-order mistakes, missing files in
+// `files`, and CJS/ESM interop bugs that unit tests (which run against TS
+// source) can't see.
 
 import { execFileSync } from 'node:child_process';
 import { createRequire } from 'node:module';
@@ -18,6 +20,8 @@ import {
   readFileSync,
   rmSync,
   existsSync,
+  realpathSync,
+  writeFileSync,
 } from 'node:fs';
 import { tmpdir } from 'node:os';
 import path from 'node:path';
@@ -78,6 +82,7 @@ for (const { dir, pkg } of targets) {
         }
       }
     }
+    checkConditions(extracted, pkg, label);
     console.log(failures.length === failuresBefore ? `  ok   ${label}` : `  FAIL ${label}`);
   } catch (err) {
     failures.push(`${label} :: pack/extract failed: ${err.message}`);
@@ -159,11 +164,12 @@ function collectEntries(pkg) {
   for (const field of ['main', 'module', 'types']) {
     if (typeof pkg[field] === 'string') push('exists', `#${field}`, pkg[field]);
   }
-  if (pkg.browser && typeof pkg.browser === 'object') {
-    for (const [from, to] of Object.entries(pkg.browser)) {
-      if (from.startsWith('./')) push('exists', '#browser', from);
-      if (typeof to === 'string' && to.startsWith('./')) push('exists', '#browser', to);
-    }
+  for (const [specifier, map] of Object.entries(pkg.imports ?? {})) {
+    // The otel condition points at src, which is dev-only and never published.
+    const published = typeof map === 'object' && map !== null
+      ? Object.entries(map).filter(([condition]) => condition !== 'otel')
+      : [['default', map]];
+    for (const [, node] of published) visitExists(push, specifier, node);
   }
   return out;
 }
@@ -225,4 +231,82 @@ function visit(push, subpath, node, cond) {
       visit(push, subpath, child, key === 'default' ? cond : key);
     }
   }
+}
+
+function visitExists(push, specifier, node) {
+  if (typeof node === 'string') push('exists', specifier, node);
+  else if (node && typeof node === 'object') {
+    for (const child of Object.values(node)) visitExists(push, specifier, child);
+  }
+}
+
+// Node picks the first matching key, so a browser branch placed after
+// import/require loads fine yet is unreachable. Resolve from inside the
+// extracted package and compare with the branch the map names.
+function checkConditions(extracted, pkg, label) {
+  const specs = [];
+  for (const [key, map] of Object.entries(pkg.imports ?? {})) {
+    if (map?.browser) specs.push({ spec: key, map });
+  }
+  if (pkg.exports && typeof pkg.exports === 'object') {
+    for (const [sub, map] of Object.entries(pkg.exports)) {
+      if (map?.browser) specs.push({ spec: pkg.name + sub.slice(1), map });
+    }
+  }
+  if (specs.length === 0) return;
+  // Node reports real paths; tmpdir() may sit behind a symlink (macOS /var).
+  const root = realpathSync(extracted);
+
+  const probe = path.join(extracted, '__verify-pack-probe.mjs');
+  writeFileSync(
+    probe,
+    [
+      "import { createRequire } from 'node:module';",
+      "import { fileURLToPath } from 'node:url';",
+      'const require = createRequire(import.meta.url);',
+      'const specs = JSON.parse(process.argv[2]);',
+      'console.log(JSON.stringify(specs.map(s => ({',
+      '  import: fileURLToPath(import.meta.resolve(s)),',
+      '  require: require.resolve(s),',
+      '}))));',
+    ].join('\n')
+  );
+  for (const condition of [null, 'browser']) {
+    let resolved;
+    try {
+      const args = condition ? [`--conditions=${condition}`] : [];
+      const out = execFileSync(
+        process.execPath,
+        [...args, probe, JSON.stringify(specs.map(s => s.spec))],
+        { cwd: extracted, encoding: 'utf8' }
+      );
+      resolved = JSON.parse(out);
+    } catch (err) {
+      failures.push(`${label} :: resolving [${condition ?? 'default'}] threw: ${err.message}`);
+      continue;
+    }
+    specs.forEach(({ spec, map }, i) => {
+      if (condition && !map[condition]) {
+        failures.push(`${label} :: "${spec}" has a browser branch but no ${condition} branch`);
+        return;
+      }
+      for (const kind of ['import', 'require']) {
+        const branch = condition ? map[condition] : map;
+        const expected = path.resolve(root, leaf(branch, kind) ?? '');
+        if (resolved[i][kind] !== expected) {
+          failures.push(
+            `${label} :: ${kind}("${spec}") [${condition ?? 'default'}] -> ` +
+              `${path.relative(root, resolved[i][kind])}, expected ${path.relative(root, expected)}`
+          );
+        }
+      }
+    });
+  }
+}
+
+// The target a resolver with only `kind` active reaches in a condition map.
+function leaf(node, kind) {
+  if (typeof node === 'string') return node;
+  if (!node || typeof node !== 'object') return undefined;
+  return leaf(node[kind] ?? node.default, kind);
 }
