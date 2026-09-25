@@ -1,13 +1,9 @@
 import { defineConfig } from 'tsdown';
 import baseConfig from '../../tsdown.config.ts';
 
-// Platform barrels stay as entries so tsdown keeps the indirection in dist,
-// letting package.json#browser path-swap node->browser for bundlers.
+// Only the two root entries are public. exports["."] maps the browser
+// condition to index-browser, which omits the node-only detectors.
 export default defineConfig({
   ...baseConfig,
-  entry: [
-    'src/index.ts',
-    'src/detectors/platform/index.ts',
-    'src/detectors/platform/browser/index.ts',
-  ],
+  entry: ['src/index.ts', 'src/index-browser.ts'],
 });

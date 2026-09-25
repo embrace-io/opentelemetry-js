@@ -5,13 +5,15 @@
 
 export type { ResourceDetectionConfig } from './config';
 export { detectResources } from './detect-resources';
+export { envDetector } from './detectors/EnvDetector';
+// Node-only, so index-browser.ts omits them; the entry-surface test keeps
+// the two export lists in sync.
 export {
-  envDetector,
   hostDetector,
   osDetector,
   processDetector,
   serviceInstanceIdDetector,
-} from './detectors';
+} from './detectors/node';
 export type { Resource } from './Resource';
 export {
   resourceFromAttributes,

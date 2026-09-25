@@ -19,8 +19,18 @@ For notes on migrating to 3.x see [the 3.x migration guide](../doc/3.x/migration
   * `logs` → import from `@opentelemetry/sdk-logs`
   * `metrics` → import from `@opentelemetry/sdk-metrics`
   * `resources` → import from `@opentelemetry/resources`
+* feat!: replace the top-level `browser` field in `package.json` with `#platform` subpath imports
+  * Bundlers must support the `imports` field and apply the `browser` condition. Bundlers without `imports` support fail to resolve `#platform`; see the migration guide for tested setups.
+  * The package roots' type declarations describe the Node.js implementation. Browser implementations now expose the same public surface, so the types are correct on both platforms.
 
 ### :rocket: Features
+
+* feat(instrumentation): add `isEnabled()` to the browser `InstrumentationBase`, matching Node.js
+  * `FetchInstrumentation` and `XMLHttpRequestInstrumentation` override it to report whether they are active, which stays false when patching fails.
+* feat(sdk-logs): add `disableAutoFlushOnDocumentHide` to `BatchLogRecordProcessorOptions` and deprecate `BatchLogRecordProcessorBrowserOptions`
+  * The option applies only in browsers and is ignored in Node.js.
+* feat(exporter-trace-otlp-http, exporter-trace-otlp-proto, exporter-logs-otlp-http, exporter-logs-otlp-proto, exporter-metrics-otlp-http, exporter-metrics-otlp-proto): browser exporters accept `OTLPExporterNodeConfigBase`, matching Node.js
+  * Browsers ignore the Node.js-only options `keepAlive`, `compression`, `httpAgentOptions` and `userAgent`.
 
 ### :bug: Bug Fixes
 

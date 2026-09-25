@@ -16,8 +16,19 @@ For notes on migrating to 3.x see [the 3.x migration guide](doc/3.x/migration-gu
 * chore(sdk-trace-base, sdk-trace-web)!: remove the `@opentelemetry/sdk-trace-base` and `@opentelemetry/sdk-trace-web` packages [#7117](https://github.com/open-telemetry/opentelemetry-js/issues/7117)
   * The sdk-trace-base, sdk-trace-web, and sdk-trace-node packages have been replaced by the `@opentelemetry/sdk-trace` package.
     See the [3.x migration guide](doc/3.x/migration-guide.md) for full migration instructions.
+* feat!: replace the top-level `browser` field in `package.json` with `#platform` subpath imports
+  * Bundlers must support the `imports` field and apply the `browser` condition. Bundlers without `imports` support fail to resolve `#platform`; see the migration guide for tested setups.
+  * The package roots' type declarations describe the Node.js implementation. Browser implementations now expose the same public surface, so the types are correct on both platforms.
+* fix(core)!: `getBooleanFromEnv` returns `false` in browsers instead of `undefined`, matching Node.js
+* fix(core)!: widen the type of `SDK_INFO['telemetry.sdk.language']` from a literal to `string`, since it is `'nodejs'` or `'webjs'` depending on the platform
+* feat(resources)!: remove the `./detectors/platform` subpath exports and drop the node-only detectors from the browser build
+  * `hostDetector`, `osDetector`, `processDetector` and `serviceInstanceIdDetector` were no-ops in browsers and are no longer exported from the browser build.
+  * Import the detectors from the package root instead of `./detectors/platform`.
 
 ### :rocket: Features
+
+* feat(sdk-trace): add `disableAutoFlushOnDocumentHide` to `BatchSpanProcessorOptions` and deprecate `BatchSpanProcessorBrowserOptions`
+  * The option applies only in browsers and is ignored in Node.js.
 
 ### :bug: Bug Fixes
 
@@ -30,6 +41,7 @@ For notes on migrating to 3.x see [the 3.x migration guide](doc/3.x/migration-gu
 * chore: declare the Node.js and npm version floors that the tsdown build requires via `devEngines` [#7093](https://github.com/open-telemetry/opentelemetry-js/pull/7093) @overbalance
   * The migration to tsdown raised the toolchain a contributor needs to build this repo, but nothing declared it. Contributors now build on Node.js `^24.11.1 || >=26.0.0` with npm `>=11.10.0`; both are advisory and warn rather than fail. The published packages are unaffected and still support Node.js `>=22.15.0`, which the test matrix continues to cover.
 * fix(karma): resolve plugins and the `process` shim from the repo root, so browser tests run with isolated installs
+* chore: add `npm run typecheck:browser`, run in CI, and a bundler test that type-checks the `#platform` packages under legacy module resolution
 
 ## 3.0.0-development.0
 

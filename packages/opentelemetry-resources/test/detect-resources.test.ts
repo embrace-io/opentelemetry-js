@@ -6,8 +6,8 @@
 import { diag } from '@opentelemetry/api';
 import * as assert from 'assert';
 import * as sinon from 'sinon';
-import type { ResourceDetector } from '../src';
-import { detectResources } from '../src';
+import type { ResourceDetector } from '../src/types';
+import { detectResources } from '../src/detect-resources';
 import { isPromiseLike } from '../src/utils';
 import { describeNode } from './util';
 

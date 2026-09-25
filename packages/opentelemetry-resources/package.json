@@ -7,6 +7,16 @@
   "types": "./dist/index.d.cts",
   "exports": {
     ".": {
+      "browser": {
+        "import": {
+          "types": "./dist/index-browser.d.mts",
+          "default": "./dist/index-browser.mjs"
+        },
+        "require": {
+          "types": "./dist/index-browser.d.cts",
+          "default": "./dist/index-browser.cjs"
+        }
+      },
       "import": {
         "types": "./dist/index.d.mts",
         "default": "./dist/index.mjs"
@@ -15,39 +25,7 @@
         "types": "./dist/index.d.cts",
         "default": "./dist/index.cjs"
       }
-    },
-    "./detectors/platform": {
-      "import": {
-        "types": "./dist/detectors/platform/index.d.mts",
-        "default": "./dist/detectors/platform/index.mjs"
-      },
-      "require": {
-        "types": "./dist/detectors/platform/index.d.cts",
-        "default": "./dist/detectors/platform/index.cjs"
-      }
-    },
-    "./detectors/platform/browser": {
-      "import": {
-        "types": "./dist/detectors/platform/browser/index.d.mts",
-        "default": "./dist/detectors/platform/browser/index.mjs"
-      },
-      "require": {
-        "types": "./dist/detectors/platform/browser/index.d.cts",
-        "default": "./dist/detectors/platform/browser/index.cjs"
-      }
     }
-  },
-  "browser": {
-    "./dist/detectors/platform/node/HostDetector.mjs": "./dist/detectors/platform/browser/HostDetector.mjs",
-    "./dist/detectors/platform/node/HostDetector.cjs": "./dist/detectors/platform/browser/HostDetector.cjs",
-    "./dist/detectors/platform/node/OSDetector.mjs": "./dist/detectors/platform/browser/OSDetector.mjs",
-    "./dist/detectors/platform/node/OSDetector.cjs": "./dist/detectors/platform/browser/OSDetector.cjs",
-    "./dist/detectors/platform/node/ProcessDetector.mjs": "./dist/detectors/platform/browser/ProcessDetector.mjs",
-    "./dist/detectors/platform/node/ProcessDetector.cjs": "./dist/detectors/platform/browser/ProcessDetector.cjs",
-    "./dist/detectors/platform/node/ServiceInstanceIdDetector.mjs": "./dist/detectors/platform/browser/ServiceInstanceIdDetector.mjs",
-    "./dist/detectors/platform/node/ServiceInstanceIdDetector.cjs": "./dist/detectors/platform/browser/ServiceInstanceIdDetector.cjs",
-    "./dist/detectors/platform/index.mjs": "./dist/detectors/platform/browser/index.mjs",
-    "./dist/detectors/platform/index.cjs": "./dist/detectors/platform/browser/index.cjs"
   },
   "repository": "open-telemetry/opentelemetry-js",
   "scripts": {

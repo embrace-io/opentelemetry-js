@@ -3,6 +3,8 @@
     "allowUnreachableCode": false,
     "allowUnusedLabels": false,
     "composite": true,
+    // Picks the otel branch of each package's #platform import, so src never needs a build.
+    "customConditions": ["otel"],
     "declaration": true,
     "declarationMap": true,
     "forceConsistentCasingInFileNames": true,

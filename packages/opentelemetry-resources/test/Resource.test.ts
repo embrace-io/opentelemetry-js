@@ -14,7 +14,11 @@ import {
 import * as assert from 'assert';
 import * as sinon from 'sinon';
 import { describeBrowser, describeNode } from './util';
-import { defaultResource, emptyResource, resourceFromAttributes } from '../src';
+import {
+  defaultResource,
+  emptyResource,
+  resourceFromAttributes,
+} from '../src/ResourceImpl';
 import { _clearDefaultServiceNameCache } from '../src/default-service-name';
 import * as EventEmitter from 'events';
 

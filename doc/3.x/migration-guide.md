@@ -13,6 +13,37 @@ The minimum supported Node.js version has been raised from `^18.19.0 || >=20.6.0
 
 ---
 
+## Platform-specific code resolves through `package.json` conditions
+
+Packages with separate Node.js and browser implementations (`@opentelemetry/core`, `@opentelemetry/resources`, `@opentelemetry/sdk-trace`, `@opentelemetry/sdk-logs`, `@opentelemetry/instrumentation`, `@opentelemetry/exporter-zipkin` and the OTLP HTTP and protobuf exporters) no longer ship a top-level `browser` field in `package.json`. They select the browser implementation with the `browser` condition: through the `#platform` subpath under `imports`, and for `@opentelemetry/resources` under `exports`.
+
+Your bundler must support the `imports` and `exports` fields. A bundler without `imports` support, such as browserify, fails with `Can't resolve '#platform'`. These setups resolve the browser implementation:
+
+| Tool | Browser implementation when |
+| --- | --- |
+| webpack 5 | `target` is `'web'` or `'webworker'` |
+| esbuild | `platform: 'browser'`, or `conditions` includes `'browser'` (for example Cloudflare Workers) |
+| Vite | client builds |
+| Rollup with `@rollup/plugin-node-resolve` | `browser: true`, or `exportConditions` includes `'browser'` |
+| Parcel 2 | the app enables package exports (see below) |
+| Jest | the test environment is `jsdom` |
+
+Parcel 2 reads `imports` only when package exports are enabled. Add this to the app's `package.json`:
+
+```json
+{
+  "@parcel/resolver-default": {
+    "packageExports": true
+  }
+}
+```
+
+Jest's `jsdom` environment applies the `browser` condition, so tests in it load the browser implementations. There, `getStringFromEnv()` returns `undefined` and `InstrumentationBase` does not patch Node.js modules. Run Node.js tests in the `node` environment.
+
+The package roots' type declarations describe the Node.js implementation, because TypeScript applies the `browser` condition only when `customConditions` includes it. The browser implementations expose the same public surface, so these types are correct on both platforms. `@opentelemetry/resources` is the exception: its browser entry omits the Node.js-only detectors, which TypeScript reports only with `"customConditions": ["browser"]`.
+
+---
+
 ## `@opentelemetry/propagator-jaeger` (package removed)
 
 The `@opentelemetry/propagator-jaeger` package has been removed. The Jaeger propagator is deprecated in favour of the W3C TraceContext propagator.
@@ -95,6 +126,14 @@ instrumentation.setConfig({
 
 ## `@opentelemetry/core`
 
+### Changed: `getBooleanFromEnv()` returns `false` in browsers
+
+The browser implementation returned `undefined` while its type said `boolean`. It now returns `false`, matching Node.js, where an unset variable also reads as `false`.
+
+### Changed: `SDK_INFO['telemetry.sdk.language']` is typed `string`
+
+The value is still `'nodejs'` in Node.js and `'webjs'` in browsers, but the type is `string` rather than the `'nodejs'` literal, since one declaration file describes both platforms.
+
 ### Removed: `getTimeOrigin()`
 
 `getTimeOrigin()` was a thin wrapper around `performance.timeOrigin`. Use `performance.timeOrigin` directly.
@@ -151,6 +190,26 @@ const timer = setTimeout(() => {}, 1000);
 if (typeof timer !== 'number') {
   timer.unref();
 }
+```
+
+---
+
+## `@opentelemetry/resources`
+
+### Removed: node-only detectors from the browser build
+
+`hostDetector`, `osDetector`, `processDetector` and `serviceInstanceIdDetector` were no-op stand-ins in browsers. The browser build no longer exports them. An ESM `import` of one of them fails the browser build with a missing-export error. A CommonJS `require()` gets `undefined`, which `detectResources()` rejects. Register these detectors from Node.js-only code.
+
+### Removed: `./detectors/platform` subpath exports
+
+`@opentelemetry/resources/detectors/platform` and `@opentelemetry/resources/detectors/platform/browser` are gone on every platform. Import the detectors from the package root.
+
+```ts
+// before
+import { hostDetector } from '@opentelemetry/resources/detectors/platform';
+
+// after
+import { hostDetector } from '@opentelemetry/resources';
 ```
 
 ---
