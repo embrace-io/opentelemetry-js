@@ -30,7 +30,7 @@ For notes on migrating to 3.x see [the 3.x migration guide](../doc/3.x/migration
 * feat(sdk-logs): add `disableAutoFlushOnDocumentHide` to `BatchLogRecordProcessorOptions` and deprecate `BatchLogRecordProcessorBrowserOptions`
   * The option applies only in browsers and is ignored in Node.js.
 * feat(exporter-trace-otlp-http, exporter-trace-otlp-proto, exporter-logs-otlp-http, exporter-logs-otlp-proto, exporter-metrics-otlp-http, exporter-metrics-otlp-proto): browser exporters accept `OTLPExporterNodeConfigBase`, matching Node.js
-  * Browsers ignore the Node.js-only options `keepAlive`, `compression`, `httpAgentOptions` and `userAgent`.
+  * Browsers ignore the Node.js-only options `keepAlive`, `compression`, `httpAgentOptions` and `userAgent`. A `compression` other than `none` logs a `diag` warning, since the payload is sent uncompressed.
 
 ### :bug: Bug Fixes
 
