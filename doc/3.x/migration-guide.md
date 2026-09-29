@@ -26,7 +26,7 @@ Your bundler must support the `imports` and `exports` fields. A bundler without 
 | Vite | SSR builds, unless `ssr.target` is `'webworker'` |
 | Rollup with `@rollup/plugin-node-resolve` | `exportConditions` includes `'node'` |
 | Parcel 2 | the target environment is Node.js and the app enables package exports (see below) |
-| Jest | the test environment is `node`, or tests load packages with `require()` (see below) |
+| Jest | the test environment is `node`, or on Jest 30, tests load packages with `require()` (see below) |
 
 A bundle that runs on Node.js but is built without the `node` condition, for example with esbuild `platform: 'neutral'` or Rollup's default `exportConditions`, contains the browser implementation. Add `node` to that bundler's conditions.
 
@@ -40,7 +40,7 @@ Parcel 2 reads `imports` only when package exports are enabled. Add this to the 
 }
 ```
 
-Jest's CommonJS runtime always applies the `node` condition, including in the `jsdom` environment, so `require()` in those tests loads the Node.js implementations. Tests that run as native ESM do not get the `node` condition from Jest, so under `jsdom` they load the browser implementations. There, `getStringFromEnv()` returns `undefined` and `InstrumentationBase` does not patch Node.js modules.
+Jest 30's CommonJS runtime always applies the `node` condition, including in the `jsdom` environment, so `require()` in those tests loads the Node.js implementations. Under `jsdom`, tests on Jest 29 and tests that run as native ESM do not get the `node` condition, so they load the browser implementations. There, `getStringFromEnv()` returns `undefined` and `InstrumentationBase` does not patch Node.js modules.
 
 The package roots' type declarations describe the Node.js implementation, because they are generated from the Node.js entry point and the package root has no platform-specific types branch. The browser implementations expose the same public surface, so these types are correct on both platforms.
 
