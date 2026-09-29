@@ -7,7 +7,7 @@
 // Packs every publishable workspace package, then loads the require/import
 // targets of every `exports` entry (or main/module) from the extracted tarball
 // and existence-checks types/main/module/imports files. Then resolves
-// every browser-conditional specifier under each platform condition. Catches
+// every node-conditional specifier with and without the node condition. Catches
 // broken `exports`/`imports` maps, condition-order mistakes, missing files in
 // `files`, and CJS/ESM interop bugs that unit tests (which run against TS
 // source) can't see.
@@ -266,18 +266,16 @@ function visitExists(push, specifier, node) {
   }
 }
 
-// Node picks the first matching key, so a browser branch placed after
+// Node picks the first matching key, so a node branch placed after
 // import/require loads fine yet is unreachable. Resolve from inside the
 // extracted package and compare with the branch the map names.
 function checkConditions(extracted, pkg, label) {
   const specs = [];
   for (const [key, map] of Object.entries(pkg.imports ?? {})) {
-    if (map?.browser) specs.push({ spec: key, map });
+    if (map?.node) specs.push({ spec: key, map });
   }
-  if (pkg.exports && typeof pkg.exports === 'object') {
-    for (const [sub, map] of Object.entries(pkg.exports)) {
-      if (map?.browser) specs.push({ spec: pkg.name + sub.slice(1), map });
-    }
+  for (const [sub, map] of Object.entries(subpathMap(pkg.exports))) {
+    if (map?.node) specs.push({ spec: pkg.name + sub.slice(1), map });
   }
   if (specs.length === 0) return;
   // Node reports real paths, and tmpdir() may be a symlink (macOS /var).
@@ -297,37 +295,35 @@ function checkConditions(extracted, pkg, label) {
       '}))));',
     ].join('\n')
   );
-  for (const condition of [null, 'browser']) {
-    let resolved;
-    try {
-      const args = condition ? [`--conditions=${condition}`] : [];
-      const out = execFileSync(
-        process.execPath,
-        [...args, probe, JSON.stringify(specs.map(s => s.spec))],
-        { cwd: extracted, encoding: 'utf8' }
-      );
-      resolved = JSON.parse(out);
-    } catch (err) {
-      failures.push(`${label} :: resolving [${condition ?? 'default'}] threw: ${err.message}`);
-      continue;
-    }
-    specs.forEach(({ spec, map }, i) => {
-      if (condition && !map[condition]) {
-        failures.push(`${label} :: "${spec}" has a browser branch but no ${condition} branch`);
-        return;
-      }
-      for (const kind of ['import', 'require']) {
-        const branch = condition ? map[condition] : map;
-        const expected = path.resolve(root, leaf(branch, kind) ?? '');
-        if (resolved[i][kind] !== expected) {
-          failures.push(
-            `${label} :: ${kind}("${spec}") [${condition ?? 'default'}] -> ` +
-              `${path.relative(root, resolved[i][kind])}, expected ${path.relative(root, expected)}`
-          );
-        }
-      }
-    });
+  let resolved;
+  try {
+    const out = execFileSync(
+      process.execPath,
+      [probe, JSON.stringify(specs.map(s => s.spec))],
+      { cwd: extracted, encoding: 'utf8' }
+    );
+    resolved = JSON.parse(out);
+  } catch (err) {
+    failures.push(`${label} :: resolving [node] threw: ${err.message}`);
+    return;
   }
+  specs.forEach(({ spec, map }, i) => {
+    for (const kind of ['import', 'require']) {
+      const nodeTarget = leaf(map.node, kind);
+      const expected = path.resolve(root, nodeTarget ?? '');
+      if (resolved[i][kind] !== expected) {
+        failures.push(
+          `${label} :: ${kind}("${spec}") [node] -> ` +
+            `${path.relative(root, resolved[i][kind])}, expected ${path.relative(root, expected)}`
+        );
+      }
+      // Node always activates node, so simulate the resolvers that do not.
+      const fallback = resolveConditions(map, new Set([kind]));
+      if (fallback === undefined || fallback === nodeTarget) {
+        failures.push(`${label} :: ${kind}("${spec}") without node -> ${fallback ?? 'nothing'}, expected a non-node target`);
+      }
+    }
+  });
 }
 
 // The target a resolver with only `kind` active reaches in a condition map.

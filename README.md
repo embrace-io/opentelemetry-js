@@ -163,7 +163,7 @@ This minimum support level is subject to change as the project evolves and as th
 
 ### React Native Support
 
-React Native and Expo apps use the browser implementations. Metro applies the `browser` condition only to web builds, so iOS and Android builds need it added in `metro.config.js`. See [the FAQ](doc/frequently-asked-questions.md#im-using-react-native-or-expo-and-get-unable-to-resolve-module-os) for the configuration.
+React Native and Expo apps use the browser implementations. Metro does not apply the `node` condition on any platform, so iOS, Android and web builds need no Metro configuration.
 
 ## TypeScript Support
 

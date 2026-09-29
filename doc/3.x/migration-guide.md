@@ -15,19 +15,20 @@ The minimum supported Node.js version has been raised from `^18.19.0 || >=20.6.0
 
 ## Platform-specific code resolves through `package.json` conditions
 
-Packages with separate Node.js and browser implementations (`@opentelemetry/core`, `@opentelemetry/resources`, `@opentelemetry/sdk-trace`, `@opentelemetry/sdk-logs`, `@opentelemetry/instrumentation`, `@opentelemetry/exporter-zipkin` and the OTLP HTTP and protobuf exporters) no longer ship a top-level `browser` field in `package.json`. They select the browser implementation with the `browser` condition on the `#platform` subpath under `imports`. Their `./platform` and `./platform/browser` subpath exports are removed; import from the package root.
+Packages with separate Node.js and browser implementations (`@opentelemetry/core`, `@opentelemetry/resources`, `@opentelemetry/sdk-trace`, `@opentelemetry/sdk-logs`, `@opentelemetry/instrumentation`, `@opentelemetry/exporter-zipkin` and the OTLP HTTP and protobuf exporters) no longer ship a top-level `browser` field in `package.json`. They select the Node.js implementation with the `node` condition on the `#platform` subpath under `imports`, and every other environment gets the browser implementation through the `default` condition. Their `./platform` and `./platform/browser` subpath exports are removed; import from the package root.
 
-Your bundler must support the `imports` and `exports` fields. A bundler without `imports` support, such as browserify, fails with `Can't resolve '#platform'`. These setups resolve the browser implementation:
+Your bundler must support the `imports` and `exports` fields. A bundler without `imports` support, such as browserify, fails with `Can't resolve '#platform'`. Node.js always applies the `node` condition. These bundler setups also resolve the Node.js implementation; all other setups, including browsers, web workers, edge runtimes and React Native, resolve the browser implementation:
 
-| Tool | Browser implementation when |
+| Tool | Node.js implementation when |
 | --- | --- |
-| webpack 5 | `target` is `'web'` or `'webworker'` |
-| esbuild | `platform: 'browser'`, or `conditions` includes `'browser'` (for example Cloudflare Workers) |
-| Vite | client builds |
-| Rollup with `@rollup/plugin-node-resolve` | `browser: true`, or `exportConditions` includes `'browser'` |
-| Parcel 2 | the app enables package exports (see below) |
-| Jest | the test environment is `jsdom` |
-| Metro (React Native, Expo) | web builds, and iOS and Android builds once the app adds the `browser` condition ([FAQ](../frequently-asked-questions.md#im-using-react-native-or-expo-and-get-unable-to-resolve-module-os)) |
+| webpack 5 | `target` is `'node'` |
+| esbuild | `platform: 'node'`, or `conditions` includes `'node'` |
+| Vite | SSR builds, unless `ssr.target` is `'webworker'` |
+| Rollup with `@rollup/plugin-node-resolve` | `exportConditions` includes `'node'` |
+| Parcel 2 | the target environment is Node.js and the app enables package exports (see below) |
+| Jest | the test environment is `node`, or tests load packages with `require()` (see below) |
+
+A bundle that runs on Node.js but is built without the `node` condition, for example with esbuild `platform: 'neutral'` or Rollup's default `exportConditions`, contains the browser implementation. Add `node` to that bundler's conditions.
 
 Parcel 2 reads `imports` only when package exports are enabled. Add this to the app's `package.json`:
 
@@ -39,11 +40,9 @@ Parcel 2 reads `imports` only when package exports are enabled. Add this to the 
 }
 ```
 
-Metro applies only the `react-native` condition on iOS and Android, so without the `browser` condition it bundles the Node.js implementations and fails on modules such as `os` and `http`. Add `browser` for those platforms in the app's `metro.config.js`; the [FAQ](../frequently-asked-questions.md#im-using-react-native-or-expo-and-get-unable-to-resolve-module-os) has the React Native and Expo configurations.
+Jest's CommonJS runtime always applies the `node` condition, including in the `jsdom` environment, so `require()` in those tests loads the Node.js implementations. Tests that run as native ESM do not get the `node` condition from Jest, so under `jsdom` they load the browser implementations. There, `getStringFromEnv()` returns `undefined` and `InstrumentationBase` does not patch Node.js modules.
 
-Jest's `jsdom` environment applies the `browser` condition, so tests in it load the browser implementations. There, `getStringFromEnv()` returns `undefined` and `InstrumentationBase` does not patch Node.js modules. Run Node.js tests in the `node` environment.
-
-The package roots' type declarations describe the Node.js implementation, because they are generated from the Node.js entry point and the package root has no `browser` types branch. The browser implementations expose the same public surface, so these types are correct on both platforms.
+The package roots' type declarations describe the Node.js implementation, because they are generated from the Node.js entry point and the package root has no platform-specific types branch. The browser implementations expose the same public surface, so these types are correct on both platforms.
 
 ---
 

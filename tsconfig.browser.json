@@ -1,9 +1,10 @@
 {
   "extends": "./tsconfig.base.json",
   "compilerOptions": {
-    // Type-checks src against each package's browser barrel by resolving #platform
-    // with the browser condition. Replaces the base list, so otel is repeated.
-    "customConditions": ["otel", "browser"],
+    // node16 always activates the node condition; bundler does not, so #platform
+    // resolves to each package's default (browser) barrel.
+    "module": "esnext",
+    "moduleResolution": "bundler",
     "noEmit": true,
     "composite": false,
     "declaration": false,
@@ -11,7 +12,7 @@
     "incremental": false,
     "lib": ["es2022", "dom", "dom.iterable"],
     "types": ["node"],
-    // The "." exports have no browser condition and point at the Node.js dist
+    // The "." exports have no platform condition and point at the Node.js dist
     // declarations, so cross-package imports are routed to src instead.
     "paths": {
       "@opentelemetry/api": ["./api/src/index.ts"],

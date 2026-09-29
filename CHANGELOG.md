@@ -17,7 +17,7 @@ For notes on migrating to 3.x see [the 3.x migration guide](doc/3.x/migration-gu
   * The sdk-trace-base, sdk-trace-web, and sdk-trace-node packages have been replaced by the `@opentelemetry/sdk-trace` package.
     See the [3.x migration guide](doc/3.x/migration-guide.md) for full migration instructions.
 * feat!: replace the top-level `browser` field in `package.json` with `#platform` subpath imports
-  * Bundlers must support the `imports` field and apply the `browser` condition. React Native and Expo apps must add it for iOS and Android in `metro.config.js`. Bundlers without `imports` support fail to resolve `#platform`; see the migration guide for tested setups.
+  * Resolvers that apply the `node` condition, such as Node.js, load the Node.js implementation. All others, including browsers, web workers, edge runtimes and React Native, load the browser implementation with no configuration. Bundlers without `imports` support fail to resolve `#platform`; see the migration guide for tested setups.
   * The package roots' type declarations describe the Node.js implementation. Browser implementations now expose the same public surface, so the types are correct on both platforms.
   * The top-level `module` field has been removed. Bundlers resolve ESM through the `exports` map; `main` and `types` remain for tools that do not read `exports`.
 * fix(core)!: `getBooleanFromEnv` returns `false` in browsers instead of `undefined`, matching Node.js

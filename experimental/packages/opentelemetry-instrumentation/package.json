@@ -20,15 +20,15 @@
   "imports": {
     "#platform": {
       "otel": {
-        "browser": "./src/platform/browser/index.ts",
-        "default": "./src/platform/node/index.ts"
+        "node": "./src/platform/node/index.ts",
+        "default": "./src/platform/browser/index.ts"
       },
-      "browser": {
-        "require": "./dist/platform/browser/index.cjs",
-        "default": "./dist/platform/browser/index.mjs"
+      "node": {
+        "require": "./dist/platform/node/index.cjs",
+        "default": "./dist/platform/node/index.mjs"
       },
-      "require": "./dist/platform/node/index.cjs",
-      "default": "./dist/platform/node/index.mjs"
+      "require": "./dist/platform/browser/index.cjs",
+      "default": "./dist/platform/browser/index.mjs"
     }
   },
   "author": "OpenTelemetry Authors",
