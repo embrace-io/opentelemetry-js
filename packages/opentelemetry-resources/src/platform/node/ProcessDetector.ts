@@ -15,10 +15,10 @@ import {
   ATTR_PROCESS_RUNTIME_DESCRIPTION,
   ATTR_PROCESS_RUNTIME_NAME,
   ATTR_PROCESS_RUNTIME_VERSION,
-} from '../../../semconv';
+} from '../../semconv';
 import * as os from 'os';
-import type { ResourceDetectionConfig } from '../../../config';
-import type { DetectedResource, ResourceDetector } from '../../../types';
+import type { ResourceDetectionConfig } from '../../config';
+import type { DetectedResource, ResourceDetector } from '../../types';
 
 /**
  * ProcessDetector will be used to detect the resources related current process running
@@ -55,4 +55,4 @@ class ProcessDetector implements ResourceDetector {
   }
 }
 
-export const processDetector = new ProcessDetector();
+export const processDetector: ResourceDetector = new ProcessDetector();

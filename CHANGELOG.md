@@ -16,8 +16,21 @@ For notes on migrating to 3.x see [the 3.x migration guide](doc/3.x/migration-gu
 * chore(sdk-trace-base, sdk-trace-web)!: remove the `@opentelemetry/sdk-trace-base` and `@opentelemetry/sdk-trace-web` packages [#7117](https://github.com/open-telemetry/opentelemetry-js/issues/7117)
   * The sdk-trace-base, sdk-trace-web, and sdk-trace-node packages have been replaced by the `@opentelemetry/sdk-trace` package.
     See the [3.x migration guide](doc/3.x/migration-guide.md) for full migration instructions.
+* feat!: replace the top-level `browser` field in `package.json` with `#platform` subpath imports
+  * Bundlers must support the `imports` field and apply the `browser` condition. React Native and Expo apps must add it for iOS and Android in `metro.config.js`. Bundlers without `imports` support fail to resolve `#platform`; see the migration guide for tested setups.
+  * The package roots' type declarations describe the Node.js implementation. Browser implementations now expose the same public surface, so the types are correct on both platforms.
+  * The top-level `module` field has been removed. Bundlers resolve ESM through the `exports` map; `main` and `types` remain for tools that do not read `exports`.
+* fix(core)!: `getBooleanFromEnv` returns `false` in browsers instead of `undefined`, matching Node.js
+* fix(core)!: widen the type of `SDK_INFO['telemetry.sdk.language']` from a literal to `string`, since it is `'nodejs'` or `'webjs'` depending on the platform
+* feat(resources)!: remove the `./detectors/platform` and `./detectors/platform/browser` subpath exports
+  * Import the detectors from the package root instead.
+* feat(core, sdk-trace, exporter-zipkin)!: remove the `./platform` and `./platform/browser` subpath exports
+  * Import from the package root instead.
 
 ### :rocket: Features
+
+* feat(sdk-trace): add `disableAutoFlushOnDocumentHide` to `BatchSpanProcessorOptions` and deprecate `BatchSpanProcessorBrowserOptions`
+  * The option applies only in browsers and is ignored in Node.js.
 
 ### :bug: Bug Fixes
 
@@ -36,6 +49,7 @@ For notes on migrating to 3.x see [the 3.x migration guide](doc/3.x/migration-gu
 * fix(verify-pack): read the npm 12 `pack --json` output, which is keyed by package name instead of an array [#7133](https://github.com/open-telemetry/opentelemetry-js/pull/7133) @overbalance
 * fix(karma): resolve plugins and the `process` shim from the repo root, so browser tests run with isolated installs [#7137](https://github.com/open-telemetry/opentelemetry-js/pull/7137) @overbalance
 * fix(nx): key the `version` target defaults by the target name, so a cache hit restores the generated `src/version.ts` [#7134](https://github.com/open-telemetry/opentelemetry-js/pull/7134) @overbalance
+* chore: add `npm run typecheck:browser` and run it in CI
 
 ## 3.0.0-development.0
 

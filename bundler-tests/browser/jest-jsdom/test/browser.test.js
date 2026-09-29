@@ -13,7 +13,6 @@ test.each(PACKAGES)('%s loads under jsdom', name => {
   expect(require(name)).toBeDefined();
 });
 
-// Jest ignores the top-level browser field, so jsdom still loads the node implementations.
-test.failing('resolves the browser implementations', () => {
+test('resolves the browser implementations', () => {
   expect(detectPlatform()).toEqual({ readsEnv: false, detectsHost: false });
 });

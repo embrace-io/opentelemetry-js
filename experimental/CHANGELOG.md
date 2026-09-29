@@ -19,6 +19,12 @@ For notes on migrating to 3.x see [the 3.x migration guide](../doc/3.x/migration
   * `logs` → import from `@opentelemetry/sdk-logs`
   * `metrics` → import from `@opentelemetry/sdk-metrics`
   * `resources` → import from `@opentelemetry/resources`
+* feat!: replace the top-level `browser` field in `package.json` with `#platform` subpath imports
+  * Bundlers must support the `imports` field and apply the `browser` condition. React Native and Expo apps must add it for iOS and Android in `metro.config.js`. Bundlers without `imports` support fail to resolve `#platform`; see the migration guide for tested setups.
+  * The package roots' type declarations describe the Node.js implementation. Browser implementations now expose the same public surface, so the types are correct on both platforms.
+  * The top-level `module` field has been removed. Bundlers resolve ESM through the `exports` map; `main` and `types` remain for tools that do not read `exports`.
+* feat(sdk-logs, instrumentation, exporter-*-otlp-http, exporter-*-otlp-proto)!: remove the `./platform` and `./platform/browser` subpath exports
+  * Import from the package root instead.
 
 ### :rocket: Features
 
@@ -26,6 +32,12 @@ For notes on migrating to 3.x see [the 3.x migration guide](../doc/3.x/migration
   * The `AnyValue`, `LogBody`, and `LogAttributes` types are no longer exported by the `api-logs` package.
     Instead, use the `AnyValue` and `Attributes` types from the latest `@opentelemetry/api` package.
   * This is part of supporting [OTEP 4485](https://github.com/open-telemetry/opentelemetry-specification/blob/main/oteps/4485-extending-attributes-to-support-complex-values.md#how).
+* feat(instrumentation): add `isEnabled()` to the browser `InstrumentationBase`, matching Node.js
+  * `FetchInstrumentation` and `XMLHttpRequestInstrumentation` override it to report whether they are active, which stays false when patching fails.
+* feat(sdk-logs): add `disableAutoFlushOnDocumentHide` to `BatchLogRecordProcessorOptions` and deprecate `BatchLogRecordProcessorBrowserOptions`
+  * The option applies only in browsers and is ignored in Node.js.
+* feat(exporter-trace-otlp-http, exporter-trace-otlp-proto, exporter-logs-otlp-http, exporter-logs-otlp-proto, exporter-metrics-otlp-http): browser exporters accept `OTLPExporterNodeConfigBase`, matching Node.js
+  * Browsers ignore the Node.js-only options `keepAlive`, `compression`, `httpAgentOptions` and `userAgent`. A `compression` other than `none` logs a `diag` warning, since the payload is sent uncompressed.
 
 ### :bug: Bug Fixes
 
